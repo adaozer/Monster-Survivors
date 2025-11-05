@@ -17,9 +17,17 @@ int main() {
     EnemyManager em;
     Camera cam(0, 0);
 
-    TileSet tiles("Resources/");
+    TileSet tiles;
     World w;
-    
+    if (!w.loadUsingFile("Resources/tiles.txt")) {
+        std::cerr << "[Boot] Map load failed. Exiting.\n";
+        return 1;
+    }
+
+    std::cerr << "[Boot] tileswide=" << w.getTilesWidth()
+        << " tileshigh=" << w.getTilesHeight()
+        << " tileW=" << w.getTileW()
+        << " tileH=" << w.getTileH() << "\n";
     while (running)
     {
         canvas.checkInput();

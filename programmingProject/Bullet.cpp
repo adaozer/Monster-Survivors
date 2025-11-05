@@ -9,7 +9,7 @@ Bullet::Bullet(float _posX, float _posY, float towardX, float towardY, bool _fri
         velocity = 100.f; // Enemy bullets go slower as the player needs to be able to dodge them
     }
 
-    maxAge = 15.0f;
+    maxAge = 12.0f;
     age = 0;
     float dx = towardX - _posX;
     float dy = towardY - _posY;

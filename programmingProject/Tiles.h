@@ -5,8 +5,9 @@
 class Tile {
 public:
 	GamesEngineeringBase::Image image;
+	bool loaded = false;
 	Tile();
-	void load(std::string filename);
+	bool load(std::string filename);
 	void draw(GamesEngineeringBase::Window &canvas, int x, int y, Camera &cam);
 
 	int getHeight();
