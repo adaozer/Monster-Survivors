@@ -32,6 +32,10 @@ int main() {
         if (canvas.keyPressed('A')) x -= p.speed;
         if (canvas.keyPressed('D')) x += p.speed;
         if (canvas.keyPressed('F')) p.activatePowerup();
+        if (canvas.keyPressed('I')) {
+            p.invul = true;
+            p.invulTime = 1000000.f;
+        }
         if (canvas.keyPressed('Z')) p.castAOE(em.enemyarr, em.rangedarr, 10, cam, canvas);
 
         p.update(dt, x, y);

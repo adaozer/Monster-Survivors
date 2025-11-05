@@ -10,4 +10,5 @@ bool onScreen(float x, float y, float w, float h, Camera& cam, const GamesEngine
 
 constexpr unsigned int bulletSize = 1000;
 constexpr unsigned int enemySize = 1000;
+constexpr unsigned int tileNum = 24;
 extern int score;
