@@ -42,7 +42,7 @@
     <ClCompile Include="EnemyManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Globals.cpp">
+    <ClCompile Include="Helper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Tiles.cpp">
@@ -77,7 +77,7 @@
     <ClInclude Include="EnemyManager.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Globals.h">
+    <ClInclude Include="Helper.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Tiles.h">

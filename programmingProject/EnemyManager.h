@@ -1,14 +1,17 @@
 #pragma once
-#include "Player.h"
+#include "Helper.h"
+
+class Player;
+class Melee;
+class Ranged;
+class Camera;
 
 class EnemyManager {
 public:
     float timeElapsed = 0.f;
     Melee* enemyarr[enemySize];
     Ranged* rangedarr[enemySize];
-    unsigned int currentSize = 0;
     float createThreshold = 2.f;
-    int rangedCount = 0;
 
     EnemyManager();
     Position determineEnemyPos(Player& p);

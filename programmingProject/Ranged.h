@@ -1,5 +1,10 @@
 #pragma once
-#include "Player.h"
+#include "Character.h"
+#include "Camera.h"
+#include "Helper.h"
+
+class Player;
+class Bullet;
 
 class Ranged : public Character {
 public:

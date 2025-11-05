@@ -1,5 +1,7 @@
 #pragma once
-#include "Player.h"
+#include "Camera.h"
+
+class Player;
 
 class Bullet : public GameObject {
 public:
@@ -15,7 +17,6 @@ public:
     float age, maxAge;
 
     Bullet(float _posX, float _posY, float towardX, float towardY, bool _friendly, int _damage);
-    bool isOnScreen(Camera& cam, GamesEngineeringBase::Window& canvas);
     void update(float dt, Player& p);
     void draw(GamesEngineeringBase::Window& canvas, Camera& cam);
 };

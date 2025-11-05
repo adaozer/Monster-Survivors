@@ -1,4 +1,6 @@
 #include "Ranged.h"
+#include "Player.h"
+#include "Bullet.h"
 
 Ranged::Ranged(float _posX, float _posY, std::string filepath, int _health, int _speed, int _damage) : Character(_posX, _posY, filepath, _health, _speed, _damage) {
     speed = 0;
@@ -48,7 +50,7 @@ void Ranged::update(float dt, Player& p, GamesEngineeringBase::Window& canvas, C
             enemyBarr[i] = nullptr;
         }
         else {
-            if (b->isOnScreen(cam, canvas)) {
+            if (onScreen(b->getX() - b->radius, b->getY() - b->radius, b->radius * 2, b->radius * 2, cam, canvas)) {
                 b->draw(canvas, cam);
             }
         }

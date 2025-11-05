@@ -1,4 +1,5 @@
 #include "Melee.h"
+#include "Player.h"
 
 Melee::Melee(float _posX, float _posY, std::string filepath, int _health, int _speed, int _damage) : Character(_posX, _posY, filepath, _health, _speed, _damage) {}
 

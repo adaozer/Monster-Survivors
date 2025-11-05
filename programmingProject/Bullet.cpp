@@ -1,4 +1,5 @@
 #include "Bullet.h"
+#include "Player.h"
 
 Bullet::Bullet(float _posX, float _posY, float towardX, float towardY, bool _friendly, int _damage) : GameObject(_posX, _posY), friendly(_friendly), damage(_damage), alive(true) {
     if (friendly) {
@@ -28,17 +29,14 @@ Bullet::Bullet(float _posX, float _posY, float towardX, float towardY, bool _fri
 
 }
 
-bool Bullet::isOnScreen(Camera& cam, GamesEngineeringBase::Window& canvas) {
-    float sx = posX - cam.getX();
-    float sy = posY - cam.getY();
-    return (sx >= -radius && sx <= canvas.getWidth() + radius && sy >= -radius && sy <= canvas.getHeight() + radius);
-}
-
 void Bullet::update(float dt, Player& p) {
     if (!alive) return;
 
     age += dt;
-    if (age >= maxAge) { alive = false; return; }
+    if (age >= maxAge) {
+        alive = false; 
+        return; 
+    }
     updatePos(vx * dt, vy * dt);
 
     if (!friendly) {
@@ -53,19 +51,14 @@ void Bullet::update(float dt, Player& p) {
         }
     }
     else {
-
-        if (posX < p.getX() - 512 || posX > p.getX() + 512 ||
-            posY < p.getY() - 384 || posY > p.getY() + 384) {
+        if (posX < p.getX() - 512 || posX > p.getX() + 512 || posY < p.getY() - 384 || posY > p.getY() + 384) {
             alive = false;
-
         }
     }
 }
 
-
 void Bullet::draw(GamesEngineeringBase::Window& canvas, Camera& cam) {
-    if (!alive) return;
-    if (!isOnScreen(cam, canvas)) return;
+    if (!alive || !onScreen(posX - radius, posY - radius, radius * 2, radius * 2, cam, canvas)) return;
 
     int ix = (int)(posX - cam.getX());
     int iy = (int)(posY - cam.getY());

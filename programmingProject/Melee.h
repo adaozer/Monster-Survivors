@@ -1,5 +1,8 @@
 #pragma once
-#include "Player.h"
+#include "Character.h"
+#include "Camera.h"
+
+class Player;
 
 class Melee : public Character {
 public:

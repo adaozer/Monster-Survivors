@@ -1,16 +1,19 @@
 #include "Player.h"
+#include "Melee.h"
+#include "Ranged.h"
+#include "Bullet.h"
 
 Player::Player(float _posX, float _posY, std::string filepath, int _health, int _speed, int _damage) : Character(_posX, _posY, filepath, _health, _speed, _damage) {
     for (int i = 0; i < bulletSize; i++) barr[i] = nullptr;
 }
 
-int Player::findNearestEnemyIndex(Melee** enemies, int count, Ranged** renemies, int rangedCount, bool& pickRanged) {
+int Player::findNearestEnemyIndex(Melee** enemies, Ranged** renemies, bool& pickRanged) {
     // Helper function to help us find where the closest enemy is to shoot at automatically
     int closest = 10000000; // Big number to start off
     int closestIndex = -1; // Index
     pickRanged = false;  // Because melee and ranged enemies are stored in seperate arrays, just to keep track
 
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < enemySize; i++) {
         Melee* e = enemies[i];
         if (!e || !e->isAlive()) continue; // Make sure its a live enemy and not a nullptr or dead
 
@@ -26,7 +29,7 @@ int Player::findNearestEnemyIndex(Melee** enemies, int count, Ranged** renemies,
         }
     }
 
-    for (int j = 0; j < rangedCount; j++) {
+    for (int j = 0; j < enemySize; j++) {
         Ranged* r = renemies[j];
         if (!r || !r->isAlive()) continue;
 
@@ -44,9 +47,9 @@ int Player::findNearestEnemyIndex(Melee** enemies, int count, Ranged** renemies,
     return closestIndex;
 }
 
-void Player::autoAttack(Melee** enemies, int count, Ranged** renemies, int rangedCount) { // Player's default (automatic) attack function
+void Player::autoAttack(Melee** enemies, Ranged** renemies) { // Player's default (automatic) attack function
     bool pickRanged = false;
-    int i = findNearestEnemyIndex(enemies, count, renemies, rangedCount, pickRanged); // Find the nearest enemy using the helper function
+    int i = findNearestEnemyIndex(enemies, renemies, pickRanged); // Find the nearest enemy using the helper function
     if (i == -1) return;
 
     float towardX, towardY; // The target's X and Y, so we know where to shoot at 
@@ -111,7 +114,22 @@ void Player::draw(GamesEngineeringBase::Window& canvas, Camera& cam) {
         }
 }
 
-void Player::checkBulletEnemyCollision(Melee** enemies, int enemyCount, Ranged** ranged, int rangedCount) {
+void Player::updateBullets(float dt, GamesEngineeringBase::Window& canvas, Camera& cam) {
+    for (unsigned int i = 0; i < bulletSize; ++i) {
+        Bullet* b = barr[i];
+        if (!b) continue;
+        b->update(dt, *this);
+
+        if (!b->alive) {
+            delete b;
+            barr[i] = nullptr;
+            continue;
+        }
+        b->draw(canvas, cam);
+    }
+}
+
+void Player::checkBulletEnemyCollision(Melee** enemies, Ranged** ranged) {
     for (int i = 0; i < bulletSize; i++) {
         Bullet* b = barr[i];
         if (!b || !b->alive) continue;
@@ -121,7 +139,7 @@ void Player::checkBulletEnemyCollision(Melee** enemies, int enemyCount, Ranged**
         int br = b->radius;
 
         bool hit = false;
-        for (int j = 0; j < enemyCount; j++) {
+        for (int j = 0; j < enemySize; j++) {
             Melee* e = enemies[j];
             if (!e || !e->isAlive()) continue;
 
@@ -137,7 +155,7 @@ void Player::checkBulletEnemyCollision(Melee** enemies, int enemyCount, Ranged**
         }
 
         if (!hit) {
-            for (int k = 0; k < rangedCount; k++) {
+            for (int k = 0; k < enemySize; k++) {
                 Ranged* r = ranged[k];
                 if (!r || !r->isAlive()) continue;
 
@@ -159,6 +177,82 @@ void Player::checkBulletEnemyCollision(Melee** enemies, int enemyCount, Ranged**
             barr[i] = nullptr;
         }
     }
+}
+
+
+bool Player::alreadyPicked(Character* c, Character** charList, int arrSize) {
+    for (int i = 0; i < arrSize; ++i) {
+        if (charList[i] == c) return true;
+    }
+    return false;
+}
+
+int Player::findTopNMaxHealth(Melee** enemies, int mCount, Ranged** renemies, int rCount, Character** charList, int N) {
+    int arrSize = 0;
+
+    for (int i = 0; i < N; i++) {
+        Character* best = nullptr;
+        int highestHP = -1;
+
+        for (int m = 0; m < mCount; m++) {
+            Melee* e = enemies[m];
+            if (!e || !e->isAlive() || alreadyPicked(e, charList, arrSize)) continue;
+            int hp = e->getHealth();
+            if (hp > highestHP) {
+                highestHP = hp;
+                best = e;
+            }
+        }
+
+        for (int j = 0; j < rCount; j++) {
+            Ranged* r = renemies[j];
+            if (!r || !r->isAlive() || alreadyPicked(r, charList, arrSize)) continue;
+            int hp = r->getHealth();
+            if (hp > highestHP) {
+                highestHP = hp;
+                best = r;
+            }
+        }
+        if (!best) break;
+        charList[arrSize++] = best;
+    }
+    return arrSize;
+}
+
+void Player::castAOE(Melee** enemies, Ranged** renemies, int N, Camera& cam, GamesEngineeringBase::Window& canvas)
+{
+    if (aoeCDTim > 0.f) return;
+    if (powerup) {
+        N *= 2;
+    }
+
+    Melee* marr[enemySize];
+    int mCount = 0;
+    Ranged* rarr[enemySize];
+    int rCount = 0;
+
+    for (int i = 0; i < enemySize; i++) {
+        Melee* e = enemies[i];
+        if (e && e->isAlive() && onScreen(e->getX(), e->getY(), e->image.width, e->image.height, cam, canvas)) {
+            marr[mCount] = e;
+            mCount++;
+        }
+    }
+
+    for (int i = 0; i < enemySize; i++) {
+        Ranged* r = renemies[i];
+        if (r && r->isAlive() && onScreen(r->getX(), r->getY(), r->image.width, r->image.height, cam, canvas)) {
+            rarr[rCount] = r;
+            rCount++;
+        }   
+    }
+
+    Character* targets[20];
+    int targetsLength = findTopNMaxHealth(marr, mCount, rarr, rCount, targets, N);
+    for (int i = 0; i < targetsLength; i++) {
+        targets[i]->takeDamage(damage * 2);
+    }
+    aoeCDTim = aoeCD;
 }
 
 void Player::update(float dt, int x, int y) {
@@ -194,6 +288,7 @@ void Player::update(float dt, int x, int y) {
 
     float newX = x * dt * 60.f;
     float newY = y * dt * 60.f;
-    updatePos(x, y); // Move the player
+    updatePos(newX, newY); // Move the player
 
 }
+

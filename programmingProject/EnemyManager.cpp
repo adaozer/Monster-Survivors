@@ -1,4 +1,7 @@
 #include "EnemyManager.h"
+#include "Player.h"
+#include "Melee.h"
+#include "Ranged.h"
 
 EnemyManager::EnemyManager() {
     for (int i = 0; i < enemySize; i++) {

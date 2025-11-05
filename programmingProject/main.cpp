@@ -1,6 +1,10 @@
+#include "Player.h"
 #include "EnemyManager.h"
+#include "GamesEngineeringBase.h"
+#include "Camera.h"
+#include "Helper.h"
 
-int main(int argc, char* argv[]) {
+int main() {
     srand(static_cast<unsigned int>(time(nullptr)));
 
     GamesEngineeringBase::Window canvas;
@@ -11,6 +15,7 @@ int main(int argc, char* argv[]) {
     GamesEngineeringBase::Timer tim;
     EnemyManager em;
     Camera cam(0, 0);
+
     while (running)
     {
         canvas.checkInput();
@@ -27,13 +32,13 @@ int main(int argc, char* argv[]) {
         if (canvas.keyPressed('A')) x -= p.speed;
         if (canvas.keyPressed('D')) x += p.speed;
         if (canvas.keyPressed('F')) p.activatePowerup();
-        if (canvas.keyPressed('Z')) p.castAOE(em.enemyarr, em.currentSize, em.rangedarr, em.rangedCount, 5, cam, canvas);
+        if (canvas.keyPressed('Z')) p.castAOE(em.enemyarr, em.rangedarr, 10, cam, canvas);
 
         p.update(dt, x, y);
         cam.center(p.getX(), p.getY(), canvas);
-        p.autoAttack(em.enemyarr, em.currentSize, em.rangedarr, em.rangedCount);
+        p.autoAttack(em.enemyarr, em.rangedarr);
         p.updateBullets(dt, canvas, cam);
-        p.checkBulletEnemyCollision(em.enemyarr, em.currentSize, em.rangedarr, em.rangedCount);
+        p.checkBulletEnemyCollision(em.enemyarr, em.rangedarr);
         em.update(canvas, dt, p, cam);
         p.draw(canvas, cam);
 
