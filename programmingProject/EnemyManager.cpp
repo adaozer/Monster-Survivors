@@ -10,26 +10,26 @@ EnemyManager::EnemyManager() {
     }
 }
 
-Position EnemyManager::determineEnemyPos(Player& p) {
+Position EnemyManager::determineEnemyPos(Camera& cam, GamesEngineeringBase::Window& canvas) {
     Position positions;
     int posX, posY;
     int side = rand() % 4;
     switch (side) {
     case 0:
-        posX = p.getX() + 537;
-        posY = p.getY() + ((rand() % 768) - 384);
+        posX = cam.getX() + canvas.getWidth() + 25;
+        posY = cam.getY() + (rand() % canvas.getHeight());
         break;
     case 1:
-        posX = p.getX() - 537;
-        posY = p.getY() + ((rand() % 768) - 384);
+        posX = cam.getX() - 25;
+        posY = cam.getY() + (rand() % canvas.getHeight());
         break;
     case 2:
-        posX = p.getX() + ((rand() % 1024) - 512);
-        posY = p.getY() - 409;
+        posX = cam.getX() + (rand() % canvas.getWidth());
+        posY = cam.getY() - 25;
         break;
     case 3:
-        posX = p.getX() + ((rand() % 1024) - 512);
-        posY = p.getY() + 409;
+        posX = cam.getX() + (rand() % canvas.getWidth());
+        posY = cam.getY() + canvas.getHeight() + 25;
         break;
     }
     positions.x = posX;
@@ -37,9 +37,9 @@ Position EnemyManager::determineEnemyPos(Player& p) {
     return positions;
 }
 
-void EnemyManager::spawnEnemy(GamesEngineeringBase::Window& canvas, Player& p, World& w) {
+void EnemyManager::spawnEnemy(GamesEngineeringBase::Window& canvas, Camera& cam, World& w) {
     if (timeElapsed <= createThreshold) return;
-    Position pos = determineEnemyPos(p);
+    Position pos = determineEnemyPos(cam, canvas);
     int posX = pos.x;
     int posY = pos.y;
     int enemyType = rand() % 5;
@@ -74,7 +74,7 @@ void EnemyManager::spawnEnemy(GamesEngineeringBase::Window& canvas, Player& p, W
         break;
     case 4:
         while (!w.inBounds(posX, posY)) {
-            Position newPos = determineEnemyPos(p);
+            Position newPos = determineEnemyPos(cam, canvas);
             posX = newPos.x;
             posY = newPos.y;
         }
@@ -88,7 +88,7 @@ void EnemyManager::spawnEnemy(GamesEngineeringBase::Window& canvas, Player& p, W
 
 void EnemyManager::update(GamesEngineeringBase::Window& canvas, float dt, Player& p, Camera& cam, World& w) {
     timeElapsed += dt;
-    spawnEnemy(canvas, p, w);
+    spawnEnemy(canvas, cam, w);
 
     for (unsigned int i = 0; i < enemySize; ++i) {
         Melee* e = enemyarr[i];

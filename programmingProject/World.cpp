@@ -8,30 +8,6 @@ World::World() {
 		}
 }
 
-bool loadMap(const char* path, int* out, int width, int height) {
-    std::ifstream in(path);
-    if (!in) {
-        std::cerr << "[Map] Cannot open " << path << "\n";
-        return false;
-    }
-
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            int v;
-            if (!(in >> v)) {
-                std::cerr << "[Map] Not enough integers in " << path << "\n";
-                return false;
-            }
-            if (v < 0 || v >= static_cast<int>(tileNum)) {
-                std::cerr << "[Map] Bad tile index " << v << " at (" << x << "," << y << ")\n";
-                v = 0;
-            }
-            out[y * width + x] = v;
-        }
-    }
-    return true;
-}
-
 bool World::loadUsingFile(const std::string& filename)
 {
     std::ifstream f(filename);

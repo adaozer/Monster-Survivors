@@ -15,7 +15,7 @@ public:
     float createThreshold = 2.f;
 
     EnemyManager();
-    Position determineEnemyPos(Player& p);
-    void spawnEnemy(GamesEngineeringBase::Window& canvas, Player& p, World& w);
+    Position determineEnemyPos(Camera& cam, GamesEngineeringBase::Window& canvas);
+    void spawnEnemy(GamesEngineeringBase::Window& canvas, Camera& cam, World& w);
     void update(GamesEngineeringBase::Window& canvas, float dt, Player& p, Camera& cam, World& w);
 };
