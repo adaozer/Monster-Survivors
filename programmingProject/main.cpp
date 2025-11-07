@@ -7,7 +7,7 @@
 
 
 // Helper: parse CSV, player: player movement
-// World, Tiles, Main
+// World, Tiles
 
 
 int main() {
