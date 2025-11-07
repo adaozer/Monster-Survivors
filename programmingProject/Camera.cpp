@@ -7,10 +7,11 @@ void Camera::center(float targetX, float targetY, GamesEngineeringBase::Window& 
      posX = targetX - canvas.getWidth() / 2;
      posY = targetY - canvas.getHeight() / 2;
 
-     // This is so the camera doesn't show black space beyond the rendered tiles. It stops centering on the player when the edge of the map is reached.
-     if (posX < 0) posX = 0;
-     if (posY < 0) posY = 0;
-     if (posX + canvas.getWidth() > w.getWorldWidth()) posX = w.getWorldWidth() - canvas.getWidth();
-     if (posY + canvas.getHeight() > w.getWorldHeight()) posY = w.getWorldHeight() - canvas.getHeight();
-
+     if (mode == 1) {
+         // This is so the camera doesn't show black space beyond the rendered tiles. It stops centering on the player when the edge of the map is reached.
+         if (posX < 0) posX = 0;
+         if (posY < 0) posY = 0;
+         if (posX + canvas.getWidth() > w.getWorldWidth()) posX = w.getWorldWidth() - canvas.getWidth();
+         if (posY + canvas.getHeight() > w.getWorldHeight()) posY = w.getWorldHeight() - canvas.getHeight();
+     }
  }

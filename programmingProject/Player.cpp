@@ -276,48 +276,39 @@ void Player::castAOE(Melee** enemies, Ranged** renemies, int N, Camera& cam, Gam
 }
 
 void Player::playerMovement(float x, float y, World& w) {
-    /*posX += x;
-    posY += y;
+    float oldX = posX;
+    posX += x;
 
-    if (posX < 0) posX = 0;
-    if (posY < 0) posY = 0;
-    if (posX + image.width > w.getWorldWidth()) posX = w.getWorldWidth() - image.width;
-    if (posY + image.height > w.getWorldHeight()) posY = w.getWorldHeight() - image.height;*/
+    if (mode == 2) {
+        if (!w.isWalkableInfinite((int)posX, (int)posY, image.width, image.height)) {
+            posX = oldX;
+        }
+    }
+    else { 
+        if (posX < 0) posX = 0;
+        float maxX = w.getWorldWidth() - image.width;
+        if (posX > maxX) posX = maxX;
 
-    if (x != 0) {
-        int stepX = (x > 0) ? 1 : -1;
-        for (int i = 0; i < std::abs(x); ++i) {
-            int tryX = posX + stepX;
-
-            // clamp within world
-            if (tryX < 0) tryX = 0;
-            if (tryX + image.width > w.getWorldWidth())
-                tryX = w.getWorldWidth() - image.width;
-
-            // only commit if walkable (not water)
-            if (w.isWalkableRect(tryX, posY, image.width, image.height))
-                posX = tryX;
-            else
-                break; // hit water — stop horizontal movement
+        if (!w.isWalkableRect((int)posX, (int)posY, image.width, image.height)) {
+            posX = oldX;
         }
     }
 
-    // --- Move along Y axis ---
-    if (y != 0) {
-        int stepY = (y > 0) ? 1 : -1;
-        for (int i = 0; i < std::abs(y); ++i) {
-            int tryY = posY + stepY;
+    float oldY = posY;
+    posY += y;
 
-            // clamp within world
-            if (tryY < 0) tryY = 0;
-            if (tryY + image.height > w.getWorldHeight())
-                tryY = w.getWorldHeight() - image.height;
+    if (mode == 2) {
+        if (!w.isWalkableInfinite((int)posX, (int)posY, image.width, image.height)) {
+            posY = oldY;
+        }
+    }
+    else {
+        if (posY < 0) posY = 0;
+        float maxY = w.getWorldHeight() - image.height;
+        if (posY > maxY) posY = maxY;
 
-            // only commit if walkable (not water)
-            if (w.isWalkableRect(posX, tryY, image.width, image.height))
-                posY = tryY;
-            else
-                break; // hit water — stop vertical movement
+        if (!w.isWalkableRect((int)posX, (int)posY, image.width, image.height)) {
+            posY = oldY;
         }
     }
 }

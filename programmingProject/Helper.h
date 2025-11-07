@@ -25,3 +25,4 @@ constexpr unsigned int tileNum = 24; // Number of tiles in the files
 constexpr unsigned int worldMaxW = 256; // So the world doesn't get bigger (We need a constant value to initialise arrays)
 constexpr unsigned int worldMaxH = 256;
 extern int score; // Track the player's score
+extern int mode;

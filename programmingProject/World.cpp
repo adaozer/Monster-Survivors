@@ -123,7 +123,24 @@ void World::draw(GamesEngineeringBase::Window& canvas, Camera& cam, TileSet& til
     }
 }
 
-void World::buildCollisionLayer()
+void World::drawInfinite(GamesEngineeringBase::Window& canvas, Camera& cam, TileSet& tiles) {
+    if (tileswide == 0 || tileshigh == 0 || tilewidth == 0 || tileheight == 0) return;
+
+    int firstTx = static_cast<int>(std::floor(cam.getX() / tilewidth)) - 1;
+    int lastTx = static_cast<int>(std::floor((cam.getX() + canvas.getWidth()) / tilewidth)) + 1;
+    int firstTy = static_cast<int>(std::floor(cam.getY() / tileheight)) - 1;
+    int lastTy = static_cast<int>(std::floor((cam.getY() + canvas.getHeight()) / tileheight)) + 1;
+
+    for (int ty = firstTy; ty <= lastTy; ++ty) {
+        for (int tx = firstTx; tx <= lastTx; ++tx) {
+            unsigned id = tileAtInfinite(tx, ty);
+            tiles[id].draw(canvas, tx * tilewidth, ty * tileheight, cam);
+        }
+    }
+}
+
+
+void World::collisionLayer()
 {
     for (int ty = 0; ty < tileshigh; ++ty) {
         for (int tx = 0; tx < tileswide; ++tx) {
@@ -157,6 +174,28 @@ bool World::isWalkableRect(int x, int y, int w, int h)
         isWalkablePixel(x + w - 1, y) &&
         isWalkablePixel(x, y + h - 1) &&
         isWalkablePixel(x + w - 1, y + h - 1);
+} 
+
+bool World::isWalkableInfinite(int x, int y, int w, int h) {
+    if (tileswide == 0 || tileshigh == 0 || tilewidth == 0 || tileheight == 0)
+        return true;
+
+    const float xs[2] = { x, x + w - 1 };
+    const float ys[2] = { y, y + h - 1 };
+
+    for (int yi = 0; yi < 2; ++yi) {
+        for (int xi = 0; xi < 2; ++xi) {
+            int tx = static_cast<int>(xs[xi]) / tilewidth;
+            int ty = static_cast<int>(ys[yi]) / tileheight;
+
+            // sampler is non-const in your file; const_cast to reuse it
+            unsigned id = const_cast<World*>(this)->tileAtInfinite(tx, ty);
+
+            if (id >= 14 && id <= 22)  // water range
+                return false;
+        }
+    }
+    return true;
 }
 
 int World::getWorldWidth() { return tileswide * tilewidth; }
@@ -175,4 +214,18 @@ bool World::inBounds(int x, int y) {
 int World::tileOperator(int tx, int ty) {
     if (!inBoundsIndex(tx, ty)) return -1;
     return map[ty][tx];
+}
+
+// NEW: finite + wrapped samplers
+unsigned int World::tileAtFinite(int tx, int ty) {
+    if (!inBoundsIndex(tx, ty)) return 0;
+    return (unsigned)map[ty][tx];
+}
+unsigned int World::tileAtInfinite(int tx, int ty) {
+    // safe mod for negatives; guard 0 to avoid UB if not loaded
+    int w = tileswide > 0 ? tileswide : 1;
+    int h = tileshigh > 0 ? tileshigh : 1;
+    int wx = tx % w; if (wx < 0) wx += w;
+    int wy = ty % h; if (wy < 0) wy += h;
+    return (unsigned)map[wy][wx];
 }

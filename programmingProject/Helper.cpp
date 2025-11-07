@@ -56,3 +56,4 @@ bool parseCSV(std::string line, int* output, int tiles) {
 }
 
 int score = 0;
+int mode = -1;
