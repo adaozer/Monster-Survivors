@@ -151,33 +151,60 @@ bool World::isWalkableRect(int x, int y, int w, int h) {
 } 
 
 bool World::isWalkableInfinite(int x, int y, int w, int h) {
-    if (tileswide == 0 || tileshigh == 0 || tilewidth == 0 || tileheight == 0)
-        return true;
+    // IsWalkablePixel and isWalkableRect compressed into 1 function for walkability in the infinite map.
+    if (tileswide == 0 || tileshigh == 0 || tilewidth == 0 || tileheight == 0) return true;
 
-    // Corner pixels
-    int px1 = x;             int py1 = y;              // TL
-    int px2 = x + w - 1;     int py2 = y;              // TR
-    int px3 = x;             int py3 = y + h - 1;      // BL
-    int px4 = x + w - 1;     int py4 = y + h - 1;      // BR
+    // First calculate the corner pixels like in isWalkableRect. (x,y) for top left corner. (x+w-1, y) for top right corner.
+    // (x, y+h-1) for bottom left corner. (x+w-1, y+h-1) for bottom right corner
+    int px1 = x;             
+    int py1 = y;         
 
-    // Convert to tile indices with FLOOR division (not trunc toward zero)
-    int tx1 = px1 / tilewidth;    if (px1 < 0 && (px1 % tilewidth)) --tx1;
-    int ty1 = py1 / tileheight;   if (py1 < 0 && (py1 % tileheight)) --ty1;
+    int px2 = x + w - 1;     
+    int py2 = y;          
 
-    int tx2 = px2 / tilewidth;    if (px2 < 0 && (px2 % tilewidth)) --tx2;
-    int ty2 = py2 / tileheight;   if (py2 < 0 && (py2 % tileheight)) --ty2;
+    int px3 = x;             
+    int py3 = y + h - 1;   
 
-    int tx3 = px3 / tilewidth;    if (px3 < 0 && (px3 % tilewidth)) --tx3;
-    int ty3 = py3 / tileheight;   if (py3 < 0 && (py3 % tileheight)) --ty3;
+    int px4 = x + w - 1;     
+    int py4 = y + h - 1;
 
-    int tx4 = px4 / tilewidth;    if (px4 < 0 && (px4 % tilewidth)) --tx4;
-    int ty4 = py4 / tileheight;   if (py4 < 0 && (py4 % tileheight)) --ty4;
+    // Convert to tile indices like "isWalkablePixel". Floor division is also required otherwise the indices will be off by 1 at the edges of the world
+    int tx1 = px1 / tilewidth;    
+    if (px1 < 0 && (px1 % tilewidth)) tx1--;
 
-    // Wrap via tileAtInfinite and block on water (14..22)
-    int id1 = tileAtInfinite(tx1, ty1); if (id1 >= 14 && id1 <= 22) return false;
-    int id2 = tileAtInfinite(tx2, ty2); if (id2 >= 14 && id2 <= 22) return false;
-    int id3 = tileAtInfinite(tx3, ty3); if (id3 >= 14 && id3 <= 22) return false;
-    int id4 = tileAtInfinite(tx4, ty4); if (id4 >= 14 && id4 <= 22) return false;
+    int ty1 = py1 / tileheight;   
+    if (py1 < 0 && (py1 % tileheight)) ty1--;
+
+    int tx2 = px2 / tilewidth;   
+    if (px2 < 0 && (px2 % tilewidth)) tx2--;
+
+    int ty2 = py2 / tileheight; 
+    if (py2 < 0 && (py2 % tileheight)) ty2--;
+
+    int tx3 = px3 / tilewidth;  
+    if (px3 < 0 && (px3 % tilewidth)) tx3--;
+
+    int ty3 = py3 / tileheight; 
+    if (py3 < 0 && (py3 % tileheight)) ty3--;
+
+    int tx4 = px4 / tilewidth;  
+    if (px4 < 0 && (px4 % tilewidth)) tx4--;
+
+    int ty4 = py4 / tileheight;
+    if (py4 < 0 && (py4 % tileheight)) ty4--;
+
+    // Wrap using % operator at tileAtInfinite and check if the result is between 14 and 22 to see if its walkable.
+    int id1 = tileAtInfinite(tx1, ty1); 
+    if (id1 >= 14 && id1 <= 22) return false;
+
+    int id2 = tileAtInfinite(tx2, ty2);
+    if (id2 >= 14 && id2 <= 22) return false;
+
+    int id3 = tileAtInfinite(tx3, ty3); 
+    if (id3 >= 14 && id3 <= 22) return false;
+
+    int id4 = tileAtInfinite(tx4, ty4); 
+    if (id4 >= 14 && id4 <= 22) return false;
 
     return true;
 }

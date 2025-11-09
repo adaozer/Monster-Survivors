@@ -68,8 +68,8 @@ void Bullet::draw(GamesEngineeringBase::Window& canvas, Camera& cam) {
 
     // Draw little circles based on the radius
 
-    for (int dx = -radius; dx <= radius; ++dx)
-        for (int dy = -radius; dy <= radius; ++dy)
+    for (int dx = -radius; dx <= radius; dx++)
+        for (int dy = -radius; dy <= radius; dy++)
             if (dx * dx + dy * dy <= radius * radius) {
                 int px = ix + dx;
                 int py = iy + dy;
